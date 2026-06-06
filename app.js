@@ -24,22 +24,22 @@ function loadArcGISModules() {
     window.require([
       "esri/config",
       "esri/WebMap",
-      "esri/views/MapView",
+      "esri/views/SceneView",
       "esri/widgets/ScaleBar",
       "esri/widgets/Home",
       "esri/widgets/Locate",
       "esri/widgets/LayerList",
       "esri/widgets/BasemapGallery",
       "esri/widgets/Expand"
-    ], (esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand) => {
-      resolve({ esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand });
+    ], (esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand) => {
+      resolve({ esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand });
     }, reject);
   });
 }
 
 async function start() {
   try {
-    const { esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand } = await loadArcGISModules();
+    const { esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand } = await loadArcGISModules();
 
     esriConfig.portalUrl = portalUrl;
 
@@ -49,9 +49,19 @@ async function start() {
       }
     });
 
-    const view = new MapView({
+    const view = new SceneView({
       container: "viewDiv",
       map: webmap,
+      viewingMode: "global",
+      camera: {
+        position: {
+          longitude: 12.5,
+          latitude: 42.5,
+          z: 2200000
+        },
+        tilt: 45,
+        heading: 0
+      },
       padding: {
         top: 8,
         right: 8,
@@ -80,10 +90,10 @@ async function start() {
     await webmap.load();
 
     const title = webmap.portalItem?.title || "Web Map";
-    document.title = `${title} | Web Map Viewer`;
+    document.title = `${title} | 3D Web Map Viewer`;
     document.querySelector("h1").textContent = title;
     setStatus("Pronta", "ready");
-    setMessage("Web map caricata", "La mappa e pronta per la consultazione.", true);
+    setMessage("Scena 3D caricata", "La mappa e pronta per la consultazione in 3D.", true);
   } catch (error) {
     console.error(error);
     setStatus("Errore", "error");

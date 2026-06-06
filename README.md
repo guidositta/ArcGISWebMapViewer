@@ -1,6 +1,6 @@
-# ArcGIS Web Map Viewer
+# ArcGIS 3D Web Map Viewer
 
-Semplice viewer statico basato su ArcGIS Maps SDK for JavaScript.
+Semplice viewer statico 3D basato su ArcGIS Maps SDK for JavaScript.
 
 ## Configurazione
 
