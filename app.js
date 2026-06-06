@@ -194,6 +194,7 @@ async function start() {
 
     const title = webmap.portalItem?.title || "Web Map";
     document.title = `${title} | 3D Web Map Viewer`;
+    document.querySelector("h1").textContent = title;
     setStatus("Pronta", "ready");
     setMessage("Scena 3D caricata", "La mappa e pronta per la consultazione in 3D.", true);
   } catch (error) {
