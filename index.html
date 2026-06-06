@@ -20,6 +20,47 @@
     </header>
 
     <section class="map-wrap" aria-label="3D web map viewer">
+      <nav class="map-toolbar" aria-label="Comandi mappa">
+        <button class="map-tool-button" type="button" data-action="home" title="Estensione iniziale" aria-label="Estensione iniziale">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M9 45c9 6 17-7 27-3 8 3 12 8 19 3V19c-8 5-15 0-22-3-9-4-16 8-24 3z" />
+            <path d="M18 38l13-6 15 7M18 25l13 7 15-7" />
+          </svg>
+        </button>
+        <button class="map-tool-button" type="button" data-action="locate" title="Localizza" aria-label="Localizza">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 6c11 0 20 9 20 20 0 15-20 32-20 32S12 41 12 26C12 15 21 6 32 6z" />
+            <circle cx="32" cy="26" r="8" />
+          </svg>
+        </button>
+        <button class="map-tool-button" type="button" data-action="layers" title="Layer" aria-label="Layer">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 8l24 12-24 12L8 20z" />
+            <path d="M12 32l20 10 20-10M12 43l20 10 20-10" />
+          </svg>
+        </button>
+        <button class="map-tool-button" type="button" data-action="basemap" title="Basemap" aria-label="Basemap">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M10 15l14-5 16 7 14-5v37l-14 5-16-7-14 5z" />
+            <path d="M24 10v37M40 17v37" />
+          </svg>
+        </button>
+        <button id="dimensionToggle" class="map-tool-button dimension-toggle" type="button" data-action="dimension" title="Passa alla vista 3D" aria-label="Passa alla vista 3D" aria-pressed="false">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M12 44l18 9 22-11V20L30 31l-18-9z" />
+            <path d="M30 31v22M18 41l12-5 16 7" />
+            <text x="32" y="22" text-anchor="middle">3D</text>
+          </svg>
+        </button>
+      </nav>
+      <aside id="mapPanel" class="map-panel" hidden>
+        <header>
+          <strong id="mapPanelTitle">Layer</strong>
+          <button id="mapPanelClose" type="button" aria-label="Chiudi pannello">×</button>
+        </header>
+        <div id="layersPanelContent" class="panel-content"></div>
+        <div id="basemapPanelContent" class="panel-content" hidden></div>
+      </aside>
       <div id="viewDiv"></div>
       <div id="messagePanel" class="message-panel" role="status" aria-live="polite">
         <strong>Connessione alla web map</strong>

@@ -29,7 +29,7 @@ function installMiddleMouseTiltControl(view) {
   let previousCursor = "";
 
   function shouldIgnoreTarget(target) {
-    return target instanceof Element && Boolean(target.closest(".esri-ui, .dimension-toggle"));
+    return target instanceof Element && Boolean(target.closest(".esri-ui, .map-toolbar, .map-panel"));
   }
 
   function updateTilt(clientY) {
@@ -81,23 +81,16 @@ function installMiddleMouseTiltControl(view) {
   });
 }
 
-function createDimensionToggle(view) {
-  const button = document.createElement("button");
+function createDimensionToggle(view, button) {
   const twoDimensionalTilt = 0;
   const threeDimensionalTilt = 55;
+  const buttonLabel = button.querySelector("text");
   let isThreeDimensional = false;
-
-  button.type = "button";
-  button.className = "dimension-toggle";
-  button.title = "Passa alla vista 3D";
-  button.setAttribute("aria-label", "Passa alla vista 3D");
-  button.setAttribute("aria-pressed", "false");
-  button.textContent = "3D";
 
   async function setDimension(nextIsThreeDimensional, animate = true) {
     isThreeDimensional = nextIsThreeDimensional;
-    button.classList.toggle("is-3d", isThreeDimensional);
-    button.textContent = isThreeDimensional ? "2D" : "3D";
+    button.classList.toggle("is-active", isThreeDimensional);
+    buttonLabel.textContent = isThreeDimensional ? "2D" : "3D";
     button.title = isThreeDimensional ? "Passa alla vista 2D" : "Passa alla vista 3D";
     button.setAttribute("aria-label", button.title);
     button.setAttribute("aria-pressed", String(isThreeDimensional));
@@ -121,6 +114,77 @@ function createDimensionToggle(view) {
   };
 }
 
+function setActivePanelTool(action) {
+  document.querySelectorAll(".map-tool-button").forEach((button) => {
+    const isPanelButton = button.dataset.action === "layers" || button.dataset.action === "basemap";
+    button.classList.toggle("is-active", isPanelButton && button.dataset.action === action);
+  });
+}
+
+function installToolbarControls(view, widgets) {
+  const home = new widgets.Home({ view });
+  const locate = new widgets.Locate({ view });
+  const panel = document.querySelector("#mapPanel");
+  const panelTitle = document.querySelector("#mapPanelTitle");
+  const layersContent = document.querySelector("#layersPanelContent");
+  const basemapContent = document.querySelector("#basemapPanelContent");
+  const dimensionToggle = createDimensionToggle(view, document.querySelector("#dimensionToggle"));
+
+  new widgets.LayerList({
+    view,
+    container: layersContent
+  });
+
+  new widgets.BasemapGallery({
+    view,
+    container: basemapContent
+  });
+
+  function closePanel() {
+    panel.hidden = true;
+    setActivePanelTool(null);
+  }
+
+  function openPanel(action) {
+    const isLayers = action === "layers";
+    panel.hidden = false;
+    panelTitle.textContent = isLayers ? "Layer" : "Basemap";
+    layersContent.hidden = !isLayers;
+    basemapContent.hidden = isLayers;
+    setActivePanelTool(action);
+  }
+
+  document.querySelector("#mapPanelClose").addEventListener("click", closePanel);
+
+  document.querySelector(".map-toolbar").addEventListener("click", (event) => {
+    const button = event.target.closest(".map-tool-button");
+
+    if (!button) {
+      return;
+    }
+
+    const action = button.dataset.action;
+
+    if (action === "home") {
+      closePanel();
+      home.go().catch((error) => console.error(error));
+    } else if (action === "locate") {
+      closePanel();
+      locate.locate().catch((error) => console.error(error));
+    } else if (action === "layers" || action === "basemap") {
+      if (!panel.hidden && button.classList.contains("is-active")) {
+        closePanel();
+      } else {
+        openPanel(action);
+      }
+    }
+  });
+
+  return {
+    dimensionToggle
+  };
+}
+
 function loadArcGISModules() {
   return new Promise((resolve, reject) => {
     if (!window.require) {
@@ -136,17 +200,16 @@ function loadArcGISModules() {
       "esri/widgets/Home",
       "esri/widgets/Locate",
       "esri/widgets/LayerList",
-      "esri/widgets/BasemapGallery",
-      "esri/widgets/Expand"
-    ], (esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand) => {
-      resolve({ esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand });
+      "esri/widgets/BasemapGallery"
+    ], (esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery) => {
+      resolve({ esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery });
     }, reject);
   });
 }
 
 async function start() {
   try {
-    const { esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand } = await loadArcGISModules();
+    const { esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery } = await loadArcGISModules();
 
     esriConfig.portalUrl = portalUrl;
 
@@ -160,6 +223,9 @@ async function start() {
       container: "viewDiv",
       map: webmap,
       viewingMode: "global",
+      ui: {
+        components: ["attribution"]
+      },
       padding: {
         top: 8,
         right: 8,
@@ -169,24 +235,14 @@ async function start() {
     });
 
     installMiddleMouseTiltControl(view);
-    const dimensionToggle = createDimensionToggle(view);
-    document.querySelector(".map-wrap").appendChild(dimensionToggle.element);
+    const { dimensionToggle } = installToolbarControls(view, {
+      Home,
+      Locate,
+      LayerList,
+      BasemapGallery
+    });
 
-    view.ui.add(new Home({ view }), "top-left");
-    view.ui.add(new Locate({ view }), "top-left");
     view.ui.add(new ScaleBar({ view, unit: "metric" }), "bottom-left");
-    view.ui.add(new Expand({
-      view,
-      content: new LayerList({ view }),
-      expandIcon: "layers",
-      group: "top-right"
-    }), "top-right");
-    view.ui.add(new Expand({
-      view,
-      content: new BasemapGallery({ view }),
-      expandIcon: "basemap",
-      group: "top-right"
-    }), "top-right");
 
     await view.when();
     await webmap.load();
