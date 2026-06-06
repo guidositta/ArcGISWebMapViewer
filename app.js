@@ -149,6 +149,45 @@ function installMiddleMouseTiltControl(view) {
   });
 }
 
+function createDimensionToggle(view) {
+  const button = document.createElement("button");
+  const twoDimensionalTilt = 0;
+  const threeDimensionalTilt = 55;
+  let isThreeDimensional = false;
+
+  button.type = "button";
+  button.className = "dimension-toggle esri-widget--button esri-widget";
+  button.title = "Passa alla vista 3D";
+  button.setAttribute("aria-label", "Passa alla vista 3D");
+  button.setAttribute("aria-pressed", "false");
+  button.textContent = "3D";
+
+  async function setDimension(nextIsThreeDimensional) {
+    isThreeDimensional = nextIsThreeDimensional;
+    button.classList.toggle("is-3d", isThreeDimensional);
+    button.textContent = isThreeDimensional ? "2D" : "3D";
+    button.title = isThreeDimensional ? "Passa alla vista 2D" : "Passa alla vista 3D";
+    button.setAttribute("aria-label", button.title);
+    button.setAttribute("aria-pressed", String(isThreeDimensional));
+
+    await view.goTo({
+      tilt: isThreeDimensional ? threeDimensionalTilt : twoDimensionalTilt,
+      heading: view.camera.heading
+    }, {
+      duration: 500
+    });
+  }
+
+  button.addEventListener("click", () => {
+    setDimension(!isThreeDimensional).catch((error) => console.error(error));
+  });
+
+  return {
+    element: button,
+    setDimension
+  };
+}
+
 function loadArcGISModules() {
   return new Promise((resolve, reject) => {
     if (!window.require) {
@@ -206,9 +245,11 @@ async function start() {
     });
 
     installMiddleMouseTiltControl(view);
+    const dimensionToggle = createDimensionToggle(view);
 
     view.ui.add(new Home({ view }), "top-left");
     view.ui.add(new Locate({ view }), "top-left");
+    view.ui.add(dimensionToggle.element, "top-left");
     view.ui.add(new ScaleBar({ view, unit: "metric" }), "bottom-left");
     view.ui.add(new Expand({
       view,
@@ -226,6 +267,7 @@ async function start() {
     await view.when();
     await webmap.load();
     await setInitialTwoDimensionalView(view, webmap);
+    await dimensionToggle.setDimension(false);
 
     const title = webmap.portalItem?.title || "Web Map";
     document.title = `${title} | 3D Web Map Viewer`;
