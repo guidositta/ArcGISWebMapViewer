@@ -18,11 +18,11 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function installRightMouseTiltControl(view) {
+function installMiddleMouseTiltControl(view) {
   const container = view.container;
   const minTilt = 0;
   const maxTilt = 80;
-  const sensitivity = 0.18;
+  const sensitivity = 0.22;
   let isTilting = false;
   let startY = 0;
   let startTilt = 45;
@@ -38,14 +38,8 @@ function installRightMouseTiltControl(view) {
     view.camera = camera;
   }
 
-  container.addEventListener("contextmenu", (event) => {
-    if (!shouldIgnoreTarget(event.target)) {
-      event.preventDefault();
-    }
-  });
-
   container.addEventListener("pointerdown", (event) => {
-    if (event.button !== 2 || shouldIgnoreTarget(event.target)) {
+    if (event.button !== 1 || shouldIgnoreTarget(event.target)) {
       return;
     }
 
@@ -143,7 +137,7 @@ async function start() {
       }
     });
 
-    installRightMouseTiltControl(view);
+    installMiddleMouseTiltControl(view);
 
     view.ui.add(new Home({ view }), "top-left");
     view.ui.add(new Locate({ view }), "top-left");
