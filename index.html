@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simple ArcGIS Portal Web Map viewer.">
+  <title>ArcGIS Web Map Viewer</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/dark/main.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="viewer-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">ArcGIS Portal</div>
+        <h1>Web Map Viewer</h1>
+      </div>
+      <div id="statusBadge" class="status-badge">Caricamento</div>
+    </header>
+
+    <section class="map-wrap" aria-label="Web map viewer">
+      <div id="viewDiv"></div>
+      <div id="messagePanel" class="message-panel" role="status" aria-live="polite">
+        <strong>Connessione alla web map</strong>
+        <span>Caricamento della mappa dal Portal aziendale.</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://js.arcgis.com/4.33/"></script>
+  <script src="app.js"></script>
+</body>
+</html>

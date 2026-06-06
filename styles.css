@@ -1,0 +1,143 @@
+:root {
+  color-scheme: dark;
+  --bg: #080d10;
+  --panel: #111a20;
+  --line: #294047;
+  --ink: #e8f3ef;
+  --muted: #91a69f;
+  --accent: #38d7be;
+  --bad: #ff5d5d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(rgba(56, 215, 190, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 215, 190, 0.035) 1px, transparent 1px),
+    var(--bg);
+  background-size: 34px 34px, 34px 34px, cover;
+  color: var(--ink);
+}
+
+.viewer-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: min(1280px, calc(100% - 28px));
+  min-height: calc(100vh - 28px);
+  margin: 14px auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(17, 26, 32, 0.94);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 3px 0 0;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.1;
+}
+
+.status-badge {
+  min-width: 124px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-badge.is-ready {
+  border-color: rgba(56, 215, 190, 0.45);
+  color: var(--accent);
+}
+
+.status-badge.is-error {
+  border-color: rgba(255, 93, 93, 0.45);
+  color: var(--bad);
+}
+
+.map-wrap {
+  position: relative;
+  min-height: 640px;
+}
+
+#viewDiv {
+  position: absolute;
+  inset: 0;
+}
+
+.message-panel {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 13px 14px;
+  border: 1px solid rgba(56, 215, 190, 0.28);
+  border-radius: 8px;
+  background: rgba(8, 13, 16, 0.76);
+  color: var(--muted);
+  backdrop-filter: blur(3px);
+}
+
+.message-panel strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink);
+}
+
+.message-panel.is-hidden {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .viewer-shell {
+    width: min(100% - 16px, 720px);
+    min-height: calc(100vh - 16px);
+    margin: 8px auto;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-badge {
+    min-width: 0;
+  }
+
+  .map-wrap {
+    min-height: 72vh;
+  }
+}
