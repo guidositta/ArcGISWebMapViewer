@@ -6,26 +6,107 @@
   <meta name="description" content="Simple ArcGIS Portal 3D web map viewer.">
   <title>ArcGIS 3D Web Map Viewer</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/dark/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="viewer-shell">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">ArcGIS Portal</div>
-        <h1>3D Web Map Viewer</h1>
-      </div>
-      <div id="statusBadge" class="status-badge">Caricamento</div>
-    </header>
+    <aside class="tool-panel" aria-label="Strumenti di editing">
+      <nav class="side-tabs" aria-label="Pannelli laterali">
+        <button class="side-tab is-active" type="button">Home</button>
+        <button class="side-tab" type="button">Layer</button>
+        <button class="side-tab" type="button">Legenda</button>
+      </nav>
 
-    <section class="map-wrap" aria-label="3D web map viewer">
-      <div id="viewDiv"></div>
-      <div id="messagePanel" class="message-panel" role="status" aria-live="polite">
-        <strong>Connessione alla web map</strong>
-        <span>Caricamento della mappa 3D dal Portal aziendale.</span>
+      <div class="tool-brand">
+        <div class="brand-mark" aria-hidden="true">N</div>
+        <div>
+          <h1>Networks Editor</h1>
+          <span>v1.16.0</span>
+        </div>
       </div>
+
+      <p class="tool-copy">Crea e modifica l'infrastruttura di rete in base ad ArcGIS Utility Network durante l'intero ciclo di vita dell'asset.</p>
+      <a class="help-link" href="https://guidositta.github.io/ArcGISWebMapViewer/">Manuale utente</a>
+
+      <ul class="tool-list" aria-label="Comandi di modifica">
+        <li><span class="tool-icon">+</span> Identifica</li>
+        <li><span class="tool-icon">V</span> Versioni</li>
+        <li><span class="tool-icon">I</span> Importazione</li>
+        <li><span class="tool-icon">F</span> Crea feature</li>
+        <li><span class="tool-icon">G</span> Modifica geometria</li>
+        <li><span class="tool-icon">A</span> Modifica attributi</li>
+        <li><span class="tool-icon">M</span> Disegna multilinee</li>
+        <li><span class="tool-icon">R</span> Modificare le associazioni</li>
+        <li><span class="tool-icon">S</span> Mostra sezioni trasversali</li>
+        <li><span class="tool-icon">C</span> Convalidare</li>
+      </ul>
+    </aside>
+
+    <section class="work-area">
+      <header class="app-ribbon">
+        <div class="quick-tools" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <nav class="ribbon-tabs" aria-label="Schede principali">
+          <button class="ribbon-tab is-active" type="button">Mappa</button>
+          <button class="ribbon-tab" type="button">Seleziona</button>
+          <button class="ribbon-tab" type="button">Costruzione</button>
+          <button class="ribbon-tab" type="button">Edita</button>
+          <button class="ribbon-tab" type="button">Network</button>
+          <button class="ribbon-tab" type="button">Note</button>
+          <button class="ribbon-tab" type="button">Gestione del lavoro</button>
+        </nav>
+
+        <div class="ribbon-actions" aria-label="Azioni mappa">
+          <button type="button"><span>⌂</span> Estensione iniziale</button>
+          <button type="button"><span>♡</span> Segnalibri della mappa</button>
+          <button type="button"><span>⊕</span> Coordinate</button>
+          <button type="button"><span>◫</span> Basemap</button>
+          <button type="button"><span>▣</span> Salva progetto</button>
+          <button type="button"><span>⇧</span> Carica progetto</button>
+          <button type="button"><span>↗</span> Condivisione del link</button>
+          <button type="button"><span>▤</span> Stampa</button>
+          <button type="button"><span>⇢</span> Esporta DX</button>
+        </div>
+      </header>
+
+      <section class="map-wrap" aria-label="3D web map viewer">
+        <div id="viewDiv"></div>
+        <div id="messagePanel" class="message-panel" role="status" aria-live="polite">
+          <strong>Connessione alla web map</strong>
+          <span>Caricamento della mappa 3D dal Portal aziendale.</span>
+        </div>
+        <footer class="map-footer">
+          <label for="scaleSelect">Scala</label>
+          <select id="scaleSelect" aria-label="Scala mappa">
+            <option>1004764</option>
+            <option>500000</option>
+            <option>250000</option>
+          </select>
+          <div id="statusBadge" class="status-badge">Caricamento</div>
+          <strong>VertiGIS</strong>
+        </footer>
+      </section>
     </section>
+
+    <aside class="search-panel" aria-label="Ricerca">
+      <div class="search-box">
+        <span aria-hidden="true">☰</span>
+        <input type="search" placeholder="Cerca..." aria-label="Cerca">
+        <button type="button" aria-label="Avvia ricerca">⌕</button>
+      </div>
+      <div class="search-tools" aria-hidden="true">
+        <span>⊞</span>
+        <span>↶</span>
+        <span>↷</span>
+        <span>▧</span>
+        <span>⌫</span>
+      </div>
+    </aside>
   </main>
 
   <script src="https://js.arcgis.com/4.33/"></script>
