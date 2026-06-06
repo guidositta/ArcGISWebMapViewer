@@ -29,16 +29,17 @@ function loadArcGISModules() {
       "esri/widgets/Home",
       "esri/widgets/Locate",
       "esri/widgets/LayerList",
+      "esri/widgets/BasemapGallery",
       "esri/widgets/Expand"
-    ], (esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, Expand) => {
-      resolve({ esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, Expand });
+    ], (esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand) => {
+      resolve({ esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand });
     }, reject);
   });
 }
 
 async function start() {
   try {
-    const { esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, Expand } = await loadArcGISModules();
+    const { esriConfig, WebMap, MapView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Expand } = await loadArcGISModules();
 
     esriConfig.portalUrl = portalUrl;
 
@@ -66,6 +67,12 @@ async function start() {
       view,
       content: new LayerList({ view }),
       expandIcon: "layers",
+      group: "top-right"
+    }), "top-right");
+    view.ui.add(new Expand({
+      view,
+      content: new BasemapGallery({ view }),
+      expandIcon: "basemap",
       group: "top-right"
     }), "top-right");
 
