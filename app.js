@@ -14,6 +14,79 @@ function setMessage(title, text, hidden = false) {
   messagePanel.innerHTML = `<strong>${title}</strong><span>${text}</span>`;
 }
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function installRightMouseTiltControl(view) {
+  const container = view.container;
+  const minTilt = 0;
+  const maxTilt = 80;
+  const sensitivity = 0.18;
+  let isTilting = false;
+  let startY = 0;
+  let startTilt = 45;
+  let previousCursor = "";
+
+  function shouldIgnoreTarget(target) {
+    return target instanceof Element && Boolean(target.closest(".esri-ui"));
+  }
+
+  function updateTilt(clientY) {
+    const camera = view.camera.clone();
+    camera.tilt = clamp(startTilt - ((clientY - startY) * sensitivity), minTilt, maxTilt);
+    view.camera = camera;
+  }
+
+  container.addEventListener("contextmenu", (event) => {
+    if (!shouldIgnoreTarget(event.target)) {
+      event.preventDefault();
+    }
+  });
+
+  container.addEventListener("pointerdown", (event) => {
+    if (event.button !== 2 || shouldIgnoreTarget(event.target)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    isTilting = true;
+    startY = event.clientY;
+    startTilt = Number.isFinite(view.camera?.tilt) ? view.camera.tilt : 45;
+    previousCursor = container.style.cursor;
+    container.style.cursor = "ns-resize";
+    container.setPointerCapture?.(event.pointerId);
+  }, true);
+
+  document.addEventListener("pointermove", (event) => {
+    if (!isTilting) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    updateTilt(event.clientY);
+  }, true);
+
+  document.addEventListener("pointerup", (event) => {
+    if (!isTilting) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    isTilting = false;
+    container.style.cursor = previousCursor;
+    container.releasePointerCapture?.(event.pointerId);
+  }, true);
+
+  window.addEventListener("blur", () => {
+    isTilting = false;
+    container.style.cursor = previousCursor;
+  });
+}
+
 function loadArcGISModules() {
   return new Promise((resolve, reject) => {
     if (!window.require) {
@@ -69,6 +142,8 @@ async function start() {
         left: 8
       }
     });
+
+    installRightMouseTiltControl(view);
 
     view.ui.add(new Home({ view }), "top-left");
     view.ui.add(new Locate({ view }), "top-left");
