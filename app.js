@@ -1,6 +1,5 @@
 const portalUrl = "https://sit.lta.it/portal";
 const webMapItemId = "f58c1be903d24a2bb56953ccc83177da";
-const startupLayerTitle = "Comuni LTA";
 
 const statusBadge = document.querySelector("#statusBadge");
 const messagePanel = document.querySelector("#messagePanel");
@@ -19,73 +18,6 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function findLayerByTitle(layers, title) {
-  const normalizedTitle = title.toLowerCase();
-
-  for (const layer of layers.toArray()) {
-    if (layer.title?.toLowerCase() === normalizedTitle) {
-      return layer;
-    }
-
-    if (layer.layers) {
-      const childLayer = findLayerByTitle(layer.layers, title);
-
-      if (childLayer) {
-        return childLayer;
-      }
-    }
-  }
-
-  return null;
-}
-
-async function getLayerExtent(layer) {
-  await layer.load();
-
-  if (layer.fullExtent) {
-    return layer.fullExtent;
-  }
-
-  if (typeof layer.queryExtent === "function") {
-    const result = await layer.queryExtent();
-    return result.extent;
-  }
-
-  if (layer.layers) {
-    const extents = await Promise.all(
-      layer.layers.toArray().map((childLayer) => getLayerExtent(childLayer).catch(() => null))
-    );
-
-    return extents.filter(Boolean).reduce((combinedExtent, extent) => {
-      return combinedExtent ? combinedExtent.union(extent) : extent.clone();
-    }, null);
-  }
-
-  return null;
-}
-
-async function setInitialTwoDimensionalView(view, webmap) {
-  const startupLayer = findLayerByTitle(webmap.layers, startupLayerTitle);
-
-  if (!startupLayer) {
-    const camera = view.camera.clone();
-    camera.tilt = 0;
-    view.camera = camera;
-    console.warn(`Layer iniziale non trovato: ${startupLayerTitle}`);
-    return;
-  }
-
-  const extent = await getLayerExtent(startupLayer);
-
-  await view.goTo({
-    target: extent || startupLayer,
-    tilt: 0,
-    heading: 0
-  }, {
-    animate: false
-  });
-}
-
 function installMiddleMouseTiltControl(view) {
   const container = view.container;
   const minTilt = 0;
@@ -97,7 +29,7 @@ function installMiddleMouseTiltControl(view) {
   let previousCursor = "";
 
   function shouldIgnoreTarget(target) {
-    return target instanceof Element && Boolean(target.closest(".esri-ui"));
+    return target instanceof Element && Boolean(target.closest(".esri-ui, .dimension-toggle"));
   }
 
   function updateTilt(clientY) {
@@ -156,13 +88,13 @@ function createDimensionToggle(view) {
   let isThreeDimensional = false;
 
   button.type = "button";
-  button.className = "dimension-toggle esri-widget--button esri-widget";
+  button.className = "dimension-toggle";
   button.title = "Passa alla vista 3D";
   button.setAttribute("aria-label", "Passa alla vista 3D");
   button.setAttribute("aria-pressed", "false");
   button.textContent = "3D";
 
-  async function setDimension(nextIsThreeDimensional) {
+  async function setDimension(nextIsThreeDimensional, animate = true) {
     isThreeDimensional = nextIsThreeDimensional;
     button.classList.toggle("is-3d", isThreeDimensional);
     button.textContent = isThreeDimensional ? "2D" : "3D";
@@ -174,7 +106,8 @@ function createDimensionToggle(view) {
       tilt: isThreeDimensional ? threeDimensionalTilt : twoDimensionalTilt,
       heading: view.camera.heading
     }, {
-      duration: 500
+      animate,
+      duration: animate ? 500 : 0
     });
   }
 
@@ -227,15 +160,6 @@ async function start() {
       container: "viewDiv",
       map: webmap,
       viewingMode: "global",
-      camera: {
-        position: {
-          longitude: 12.5,
-          latitude: 42.5,
-          z: 2200000
-        },
-        tilt: 0,
-        heading: 0
-      },
       padding: {
         top: 8,
         right: 8,
@@ -246,10 +170,10 @@ async function start() {
 
     installMiddleMouseTiltControl(view);
     const dimensionToggle = createDimensionToggle(view);
+    document.querySelector(".map-wrap").appendChild(dimensionToggle.element);
 
     view.ui.add(new Home({ view }), "top-left");
     view.ui.add(new Locate({ view }), "top-left");
-    view.ui.add(dimensionToggle.element, "top-left");
     view.ui.add(new ScaleBar({ view, unit: "metric" }), "bottom-left");
     view.ui.add(new Expand({
       view,
@@ -266,8 +190,7 @@ async function start() {
 
     await view.when();
     await webmap.load();
-    await setInitialTwoDimensionalView(view, webmap);
-    await dimensionToggle.setDimension(false);
+    await dimensionToggle.setDimension(false, false);
 
     const title = webmap.portalItem?.title || "Web Map";
     document.title = `${title} | 3D Web Map Viewer`;
