@@ -34,33 +34,106 @@
       <div id="statusBadge" class="status-badge">Caricamento</div>
     </header>
 
+    <aside class="advanced-sidebar" aria-label="Pannello strumenti avanzati">
+      <nav class="advanced-side-tabs" aria-label="Sezioni strumenti">
+        <button class="advanced-side-tab is-active" type="button" data-advanced-tab="home">Home</button>
+        <button class="advanced-side-tab" type="button" data-advanced-tab="layer">Layer</button>
+        <button class="advanced-side-tab" type="button" data-advanced-tab="legend">Legenda</button>
+      </nav>
+      <section class="advanced-side-page is-active" data-advanced-page="home">
+        <div class="advanced-brand">
+          <div class="advanced-brand-mark" aria-hidden="true">N</div>
+          <div>
+            <strong>Networks Explorer</strong>
+            <span>v1.15.1</span>
+          </div>
+        </div>
+        <p>Visualizzazione tematica e topologica, analisi e valutazione di dati di rete.</p>
+        <a href="https://guidositta.github.io/ArcGISWebMapViewer/">Manuale utente</a>
+        <ul class="advanced-tool-list">
+          <li><span>＋</span> Identifica</li>
+          <li><span>⚑</span> Trace</li>
+          <li><span>◇</span> Trova diagramma</li>
+          <li><span>✣</span> Mostra associazioni</li>
+          <li><span>●</span> Terminali</li>
+          <li><span>◎</span> Mostra sezioni trasversali</li>
+          <li><span>⌁</span> Sottoreti</li>
+        </ul>
+      </section>
+      <section class="advanced-side-page" data-advanced-page="layer">
+        <div class="advanced-layer-tools" aria-hidden="true">
+          <span>▣</span>
+          <span>⇧</span>
+          <span>☚</span>
+        </div>
+        <label class="advanced-filter">
+          <input type="search" placeholder="Filtra i layer per titolo ..." aria-label="Filtra i layer">
+          <span>×</span>
+        </label>
+        <div id="advancedLayersContent" class="advanced-widget-content"></div>
+      </section>
+      <section class="advanced-side-page" data-advanced-page="legend">
+        <div id="advancedLegendContent" class="advanced-widget-content"></div>
+      </section>
+    </aside>
+
+    <header class="advanced-ribbon" aria-label="Ribbon strumenti avanzati">
+      <nav class="advanced-ribbon-tabs" aria-label="Schede ribbon">
+        <button class="is-active" type="button">Mappa</button>
+        <button type="button">Seleziona</button>
+        <button type="button">Network</button>
+        <button type="button">Note</button>
+      </nav>
+      <div id="advancedToolbarHost" class="advanced-toolbar-host"></div>
+      <div class="advanced-ribbon-actions" aria-hidden="true">
+        <button type="button"><span>▣</span> Salva progetto</button>
+        <button type="button"><span>⇧</span> Carica progetto</button>
+        <button type="button"><span>↗</span> Condivisione del link</button>
+        <button type="button"><span>▤</span> Stampa</button>
+        <button type="button"><span>⇥</span> Esporta DXF</button>
+      </div>
+    </header>
+
+    <aside class="advanced-search" aria-label="Ricerca avanzata">
+      <label>
+        <span>☷</span>
+        <input type="search" placeholder="Cerca..." aria-label="Cerca">
+        <button type="button" aria-label="Cerca">⌕</button>
+      </label>
+      <div aria-hidden="true">
+        <span>✛</span>
+        <span>✖</span>
+        <span>▤</span>
+      </div>
+    </aside>
+
     <section class="map-wrap" aria-label="3D web map viewer">
       <nav class="map-toolbar" aria-label="Comandi mappa">
-        <button class="map-tool-button" type="button" data-action="home" title="Estensione iniziale" aria-label="Estensione iniziale">
+        <button class="map-tool-button" type="button" data-action="home" data-label="Estensione iniziale" title="Estensione iniziale" aria-label="Estensione iniziale">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <path d="M9 45c9 6 17-7 27-3 8 3 12 8 19 3V19c-8 5-15 0-22-3-9-4-16 8-24 3z" />
             <path d="M18 38l13-6 15 7M18 25l13 7 15-7" />
           </svg>
         </button>
-        <button class="map-tool-button" type="button" data-action="locate" title="Localizza" aria-label="Localizza">
+        <button class="map-tool-button" type="button" data-action="locate" data-label="Coordinate" title="Localizza" aria-label="Localizza">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <path d="M32 6c11 0 20 9 20 20 0 15-20 32-20 32S12 41 12 26C12 15 21 6 32 6z" />
             <circle cx="32" cy="26" r="8" />
           </svg>
         </button>
-        <button class="map-tool-button" type="button" data-action="layers" title="Layer" aria-label="Layer">
+        <button class="map-tool-button" type="button" data-action="layers" data-label="Layer" title="Layer" aria-label="Layer">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <path d="M32 8l24 12-24 12L8 20z" />
             <path d="M12 32l20 10 20-10M12 43l20 10 20-10" />
           </svg>
         </button>
-        <button class="map-tool-button" type="button" data-action="basemap" title="Basemap" aria-label="Basemap">
+        <button class="map-tool-button" type="button" data-action="basemap" data-label="Basemap" title="Basemap" aria-label="Basemap">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <path d="M10 15l14-5 16 7 14-5v37l-14 5-16-7-14 5z" />
             <path d="M24 10v37M40 17v37" />
           </svg>
         </button>
-        <button id="dimensionToggle" class="map-tool-button dimension-toggle" type="button" data-action="dimension" title="Passa alla vista 3D" aria-label="Passa alla vista 3D" aria-pressed="false">
+        <button id="dimensionToggle" class="map-tool-button dimension-toggle" type="button" data-action="dimension" data-label="Vista 3D" title="Passa alla vista 3D" aria-label="Passa alla vista 3D" aria-pressed="false">
           <svg viewBox="0 0 64 64" aria-hidden="true">
             <path d="M12 44l18 9 22-11V20L30 31l-18-9z" />
             <path d="M30 31v22M18 41l12-5 16 7" />

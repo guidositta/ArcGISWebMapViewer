@@ -13,6 +13,12 @@ const uiThemes = [
     name: "Tema Chiaro",
     description: "Sfondo bianco e strumenti nella barra superiore con icone verde scuro da 24px.",
     badge: "Nuovo"
+  },
+  {
+    id: "strumenti-avanzati",
+    name: "Strumenti avanzati",
+    description: "Ribbon superiore, pannello laterale Home/Layer/Legenda e ricerca in stile VertiGIS.",
+    badge: "Nuovo"
   }
 ];
 
@@ -26,15 +32,29 @@ function applyUiTheme(themeId) {
   const theme = uiThemes.find((candidate) => candidate.id === themeId) || uiThemes[0];
   const toolbar = document.querySelector(".map-toolbar");
   const mapWrap = document.querySelector(".map-wrap");
+  const mapPanel = document.querySelector("#mapPanel");
   const topbarToolbarHost = document.querySelector("#topbarToolbarHost");
+  const advancedToolbarHost = document.querySelector("#advancedToolbarHost");
+  const layersContent = document.querySelector("#layersPanelContent");
+  const advancedLayersContent = document.querySelector("#advancedLayersContent");
 
   document.body.dataset.uiTheme = theme.id;
 
-  if (toolbar && mapWrap && topbarToolbarHost) {
+  if (toolbar && mapWrap && mapPanel && topbarToolbarHost && advancedToolbarHost) {
     if (theme.id === "tema-chiaro") {
       topbarToolbarHost.appendChild(toolbar);
+    } else if (theme.id === "strumenti-avanzati") {
+      advancedToolbarHost.appendChild(toolbar);
     } else {
-      mapWrap.insertBefore(toolbar, document.querySelector("#mapPanel"));
+      mapWrap.insertBefore(toolbar, mapPanel);
+    }
+  }
+
+  if (layersContent && advancedLayersContent && mapPanel) {
+    if (theme.id === "strumenti-avanzati") {
+      advancedLayersContent.appendChild(layersContent);
+    } else {
+      mapPanel.appendChild(layersContent);
     }
   }
 
@@ -171,6 +191,7 @@ function createDimensionToggle(view, button) {
     button.classList.toggle("is-active", isThreeDimensional);
     buttonLabel.textContent = isThreeDimensional ? "2D" : "3D";
     button.title = isThreeDimensional ? "Passa alla vista 2D" : "Passa alla vista 3D";
+    button.dataset.label = isThreeDimensional ? "Vista 2D" : "Vista 3D";
     button.setAttribute("aria-label", button.title);
     button.setAttribute("aria-pressed", String(isThreeDimensional));
 
@@ -200,6 +221,27 @@ function setActivePanelTool(action) {
   });
 }
 
+function selectAdvancedTab(tabName) {
+  document.querySelectorAll(".advanced-side-tab").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.advancedTab === tabName);
+  });
+  document.querySelectorAll(".advanced-side-page").forEach((page) => {
+    page.classList.toggle("is-active", page.dataset.advancedPage === tabName);
+  });
+}
+
+function initAdvancedTabs() {
+  document.querySelector(".advanced-side-tabs").addEventListener("click", (event) => {
+    const tab = event.target.closest("[data-advanced-tab]");
+
+    if (!tab) {
+      return;
+    }
+
+    selectAdvancedTab(tab.dataset.advancedTab);
+  });
+}
+
 function installToolbarControls(view, widgets) {
   const home = new widgets.Home({ view });
   const locate = new widgets.Locate({ view });
@@ -217,6 +259,11 @@ function installToolbarControls(view, widgets) {
   new widgets.BasemapGallery({
     view,
     container: basemapContent
+  });
+
+  new widgets.Legend({
+    view,
+    container: document.querySelector("#advancedLegendContent")
   });
 
   function closePanel() {
@@ -250,6 +297,10 @@ function installToolbarControls(view, widgets) {
     } else if (action === "locate") {
       closePanel();
       locate.locate().catch((error) => console.error(error));
+    } else if (action === "layers" && document.body.dataset.uiTheme === "strumenti-avanzati") {
+      closePanel();
+      selectAdvancedTab("layer");
+      button.classList.add("is-active");
     } else if (action === "layers" || action === "basemap") {
       if (!panel.hidden && button.classList.contains("is-active")) {
         closePanel();
@@ -279,16 +330,17 @@ function loadArcGISModules() {
       "esri/widgets/Home",
       "esri/widgets/Locate",
       "esri/widgets/LayerList",
-      "esri/widgets/BasemapGallery"
-    ], (esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery) => {
-      resolve({ esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery });
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Legend"
+    ], (esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Legend) => {
+      resolve({ esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Legend });
     }, reject);
   });
 }
 
 async function start() {
   try {
-    const { esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery } = await loadArcGISModules();
+    const { esriConfig, WebMap, SceneView, ScaleBar, Home, Locate, LayerList, BasemapGallery, Legend } = await loadArcGISModules();
 
     esriConfig.portalUrl = portalUrl;
 
@@ -318,7 +370,8 @@ async function start() {
       Home,
       Locate,
       LayerList,
-      BasemapGallery
+      BasemapGallery,
+      Legend
     });
 
     view.ui.add(new ScaleBar({ view, unit: "metric" }), "bottom-left");
@@ -343,4 +396,5 @@ async function start() {
 }
 
 initUiSelector();
+initAdvancedTabs();
 start();

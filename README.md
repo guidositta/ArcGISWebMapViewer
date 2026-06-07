@@ -30,6 +30,7 @@ I temi attuali sono:
 
 - `Atlante illustrato`, id `atlas-illustrato`
 - `Tema Chiaro`, id `tema-chiaro`
+- `Strumenti avanzati`, id `strumenti-avanzati`
 
 Per aggiungere una nuova UI, aggiungere un oggetto in `uiThemes` e gli stili CSS
 associati al valore `body[data-ui-theme="nuovo-id"]`.
