@@ -26,7 +26,10 @@ https://guidositta.github.io
 ## Temi UI
 
 Le interfacce disponibili sono registrate in `app.js` nella costante `uiThemes`.
-Il tema attuale si chiama `Atlante illustrato` e usa l'id `atlas-illustrato`.
+I temi attuali sono:
+
+- `Atlante illustrato`, id `atlas-illustrato`
+- `Tema Chiaro`, id `tema-chiaro`
 
 Per aggiungere una nuova UI, aggiungere un oggetto in `uiThemes` e gli stili CSS
 associati al valore `body[data-ui-theme="nuovo-id"]`.

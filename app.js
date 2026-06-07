@@ -7,6 +7,12 @@ const uiThemes = [
     name: "Atlante illustrato",
     description: "Toolbar verticale con pulsanti blu/viola ispirati alla grafica mappa illustrata.",
     badge: "Attuale"
+  },
+  {
+    id: "tema-chiaro",
+    name: "Tema Chiaro",
+    description: "Sfondo bianco e strumenti nella barra superiore con icone verde scuro da 24px.",
+    badge: "Nuovo"
   }
 ];
 
@@ -18,7 +24,20 @@ const rememberUiChoice = document.querySelector("#rememberUiChoice");
 
 function applyUiTheme(themeId) {
   const theme = uiThemes.find((candidate) => candidate.id === themeId) || uiThemes[0];
+  const toolbar = document.querySelector(".map-toolbar");
+  const mapWrap = document.querySelector(".map-wrap");
+  const topbarToolbarHost = document.querySelector("#topbarToolbarHost");
+
   document.body.dataset.uiTheme = theme.id;
+
+  if (toolbar && mapWrap && topbarToolbarHost) {
+    if (theme.id === "tema-chiaro") {
+      topbarToolbarHost.appendChild(toolbar);
+    } else {
+      mapWrap.insertBefore(toolbar, document.querySelector("#mapPanel"));
+    }
+  }
+
   return theme;
 }
 
