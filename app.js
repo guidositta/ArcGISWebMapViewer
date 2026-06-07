@@ -1,8 +1,68 @@
 const portalUrl = "https://sit.lta.it/portal";
 const webMapItemId = "f58c1be903d24a2bb56953ccc83177da";
+const uiThemeStorageKey = "arcgis-viewer-ui-theme";
+const uiThemes = [
+  {
+    id: "atlas-illustrato",
+    name: "Atlante illustrato",
+    description: "Toolbar verticale con pulsanti blu/viola ispirati alla grafica mappa illustrata.",
+    badge: "Attuale"
+  }
+];
 
 const statusBadge = document.querySelector("#statusBadge");
 const messagePanel = document.querySelector("#messagePanel");
+const uiSelector = document.querySelector("#uiSelector");
+const uiThemeOptions = document.querySelector("#uiThemeOptions");
+const rememberUiChoice = document.querySelector("#rememberUiChoice");
+
+function applyUiTheme(themeId) {
+  const theme = uiThemes.find((candidate) => candidate.id === themeId) || uiThemes[0];
+  document.body.dataset.uiTheme = theme.id;
+  return theme;
+}
+
+function closeUiSelector() {
+  uiSelector.hidden = true;
+  uiSelector.setAttribute("aria-hidden", "true");
+}
+
+function chooseUiTheme(themeId) {
+  const theme = applyUiTheme(themeId);
+
+  if (rememberUiChoice.checked) {
+    localStorage.setItem(uiThemeStorageKey, theme.id);
+  } else {
+    localStorage.removeItem(uiThemeStorageKey);
+  }
+
+  closeUiSelector();
+}
+
+function initUiSelector() {
+  const savedTheme = localStorage.getItem(uiThemeStorageKey);
+  const selectedTheme = applyUiTheme(savedTheme || uiThemes[0].id);
+
+  rememberUiChoice.checked = Boolean(savedTheme);
+  uiThemeOptions.innerHTML = uiThemes.map((theme) => `
+    <button class="ui-theme-card ${theme.id === selectedTheme.id ? "is-selected" : ""}" type="button" data-theme-id="${theme.id}">
+      <span>${theme.badge}</span>
+      <strong>${theme.name}</strong>
+      <small>${theme.description}</small>
+    </button>
+  `).join("");
+
+  uiThemeOptions.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-theme-id]");
+
+    if (button) {
+      chooseUiTheme(button.dataset.themeId);
+    }
+  });
+
+  uiSelector.hidden = false;
+  uiSelector.removeAttribute("aria-hidden");
+}
 
 function setStatus(label, state) {
   statusBadge.textContent = label;
@@ -263,4 +323,5 @@ async function start() {
   }
 }
 
+initUiSelector();
 start();

@@ -9,7 +9,21 @@
   <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/dark/main.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-ui-theme="atlas-illustrato">
+  <section id="uiSelector" class="ui-selector" aria-labelledby="uiSelectorTitle" role="dialog" aria-modal="true">
+    <div class="ui-selector-panel">
+      <div class="ui-selector-heading">
+        <span>ArcGIS Portal</span>
+        <h2 id="uiSelectorTitle">Scegli interfaccia</h2>
+      </div>
+      <div id="uiThemeOptions" class="ui-theme-options"></div>
+      <label class="remember-ui">
+        <input id="rememberUiChoice" type="checkbox">
+        Ricorda questa scelta
+      </label>
+    </div>
+  </section>
+
   <main class="viewer-shell">
     <header class="topbar">
       <div>
@@ -56,7 +70,7 @@
       <aside id="mapPanel" class="map-panel" hidden>
         <header>
           <strong id="mapPanelTitle">Layer</strong>
-          <button id="mapPanelClose" type="button" aria-label="Chiudi pannello">×</button>
+          <button id="mapPanelClose" type="button" aria-label="Chiudi pannello">x</button>
         </header>
         <div id="layersPanelContent" class="panel-content"></div>
         <div id="basemapPanelContent" class="panel-content" hidden></div>

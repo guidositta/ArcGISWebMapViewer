@@ -30,6 +30,102 @@ body {
   color: var(--ink);
 }
 
+[hidden] {
+  display: none !important;
+}
+
+.ui-selector {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 25% 24%, rgba(112, 132, 255, 0.32), transparent 34%),
+    radial-gradient(circle at 74% 74%, rgba(56, 215, 190, 0.18), transparent 34%),
+    rgba(5, 8, 18, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.ui-selector-panel {
+  width: min(520px, 100%);
+  padding: 22px;
+  border: 1px solid rgba(174, 190, 255, 0.38);
+  border-radius: 18px;
+  background: rgba(14, 20, 42, 0.94);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+}
+
+.ui-selector-heading span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ui-selector-heading h2 {
+  margin: 4px 0 18px;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.ui-theme-options {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-theme-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 15px 16px;
+  border: 1px solid rgba(174, 190, 255, 0.32);
+  border-radius: 16px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 90% 18%, rgba(255, 255, 255, 0.88) 0 12px, transparent 13px),
+    linear-gradient(135deg, rgba(102, 124, 247, 0.44), rgba(174, 190, 255, 0.18));
+  cursor: pointer;
+  text-align: left;
+}
+
+.ui-theme-card:hover,
+.ui-theme-card:focus-visible,
+.ui-theme-card.is-selected {
+  border-color: rgba(56, 215, 190, 0.74);
+  box-shadow: 0 12px 28px rgba(42, 49, 193, 0.32);
+}
+
+.ui-theme-card span {
+  width: max-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #071012;
+  background: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ui-theme-card strong {
+  font-size: 17px;
+}
+
+.ui-theme-card small {
+  color: #c9d2ee;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.remember-ui {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-top: 14px;
+  color: #c9d2ee;
+  font-size: 13px;
+}
+
 .viewer-shell {
   display: grid;
   grid-template-rows: auto 1fr;
